@@ -1,73 +1,54 @@
 <?php
-
+require 'vendor/autoload.php';
+ 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
-
-require __DIR__ . '/vendor/autoload.php';
-
+ 
 $app = AppFactory::create();
-
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorMiddleware->setErrorHandler(HttpNotFoundException::class, function (
-    Request $request,
-    Throwable $exception,
-    bool $displayErrorDetails,
-    bool $logErrors,
-    bool $logErrorDetails
-) use ($app) {
-    $response = $app->getResponseFactory()->createResponse();
-    $response->getBody()->write('{"error": "voce ser carente!"}');
-    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-});
-
-$app->get('/ola/{name}', function (Request $request, Response $response, array $args) {
-    $name = $args['name'];
-    $response->getBody()->write("Hello, $name");
-    return $response;
-});
-
-$app->get('/tarefas', function (Request $request, Response $response, array $args) {
-    $tarefas = [
-        ["id" => 1, "titulo" => "Veja que legal1", "concluido" => false],
-        ["id" => 3, "titulo" => "Veja que legal2", "concluido" => true],
-        ["id" => 4, "titulo" => "Veja que legal3", "concluido" => false],
-        ["id" => 5, "titulo" => "Selokoooo", "concluido" => true],
+ 
+$usuarios = [];
+ 
+$app->post('/usuarios', function (Request $request, Response $response, $args) use (&$usuarios) {
+    $dados = $request->getParsedBody();
+ 
+    if (!isset($dados['login']) || !isset($dados['senha'])) {
+        $response->getBody()->write(json_encode(["erro" => "Login e senha são obrigatórios."]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+ 
+    $novoUsuario = [
+        'id' => count($usuarios) + 1,
+        'login' => $dados['login'],
+        'senha' => password_hash($dados['senha'], PASSWORD_DEFAULT),
+        'nome' => $dados['nome'] ?? null,
+        'perfil' => $dados['perfil'] ?? null,
     ];
-    $response->getBody()->write(json_encode($tarefas));
+ 
+    $usuarios[] = $novoUsuario;
+    $response->getBody()->write(json_encode($novoUsuario));
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+});
+ 
+$app->get('/usuarios', function (Request $request, Response $response, $args) use ($usuarios) {
+    $response->getBody()->write(json_encode(array_slice($usuarios, 0, 5)));
     return $response->withHeader('Content-Type', 'application/json');
 });
-
-$app->post('/tarefas', function (Request $request, Response $response, array $args) {
-    $parametros = (array) $request->getParsedBody();
-    if (!array_key_exists('titulo', $parametros) || empty($parametros['titulo'])) {
-        $response->getBody()->write(json_encode([
-            "error" => "Login e senha são obrigatorios"
-        ]));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+ 
+$app->delete('/usuarios/{id}', function (Request $request, Response $response, $args) use (&$usuarios) {
+    $id = (int)$args['id'];
+ 
+    foreach ($usuarios as $index => $usuario) {
+        if ($usuario['id'] === $id) {
+            array_splice($usuarios, $index, 1);
+            $response->getBody()->write(json_encode(["mensagem" => "Usuário removido com sucesso."]));
+            return $response->withHeader('Content-Type', 'application/json');
+        }
     }
-    return $response->withStatus(201);
+ 
+    $response->getBody()->write(json_encode(["erro" => "Usuário não encontrado."]));
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
 });
-
-$app->delete('/tarefas', function (Request $request, Response $response, array $args) {
-    return $response->withStatus(204);
-});
-
-$app->put('/tarefas', function (Request $request, Response $response, array $args) {
-    return $response->withStatus(204);
-});
-
-$app->put('/tarefas/{id}', function (Request $request, Response $response, array $args) {
-    $id = $args['id'];
-    $dados_para_atualizar = (array) $request->getParsedBody();
-    if (array_key_exists('titulo', $dados_para_atualizar) && empty($dados_para_atualizar['titulo'])) {
-        $response->getBody()->write(json_encode([
-            "mensagem" => "titulo é obrigatorio"
-        ]));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-    }
-    return $response->withStatus(201);
-});
-
+ 
 $app->run();
+ 
