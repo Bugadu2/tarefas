@@ -14,7 +14,7 @@ $usuarios = [
     ["id" => 2, "login" => "user2", "senha" => "1234", "nome" => "Usuário 2", "perfil" => "user"],
     ["id" => 3, "login" => "user3", "senha" => "1234", "nome" => "Usuário 3", "perfil" => "user"],
     ["id" => 4, "login" => "user4", "senha" => "1234", "nome" => "Usuário 4", "perfil" => "user"],
-    ["id" => 5, "login" => "user5", "senha" => "1234", "nome" => "Usuário 5", "perfil" => "user"]
+    ["id" => 5, "login" => "user5", "senha" => "1234", "nome" => "Usuário 5", "perfil" => "user"],
 ];
 
 // Rota GET /usuarios
