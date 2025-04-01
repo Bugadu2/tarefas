@@ -43,7 +43,7 @@ $app->post('/tarefas', function (Request $request, Response $response, array $ar
     $parametros = (array) $request->getParsedBody();
     if (!array_key_exists('titulo', $parametros) || empty($parametros['titulo'])) {
         $response->getBody()->write(json_encode([
-            "mensagem" => "titulo e obrigatorio"
+            "error" => "Login e senha são obrigatorios"
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
@@ -63,7 +63,7 @@ $app->put('/tarefas/{id}', function (Request $request, Response $response, array
     $dados_para_atualizar = (array) $request->getParsedBody();
     if (array_key_exists('titulo', $dados_para_atualizar) && empty($dados_para_atualizar['titulo'])) {
         $response->getBody()->write(json_encode([
-            "error" => "Login e senha são obrigatorios"
+            "mensagem" => "titulo é obrigatorio"
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
