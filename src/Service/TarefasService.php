@@ -47,12 +47,20 @@ class TarefaService
     {
         $data = $this->readData();
         foreach ($data as &$tarefa) {
-            if ($tarefa['id'] ==$id) {
+            if ($tarefa['id'] == $id) {
                 $tarefa = array_merge($tarefa, $updateTarefa);
                 $this->writeData($data);
                 return true;
             }
         }
         return false;
+    }
+
+    public function deleteTarefa($id)
+    {
+        $data = $this->readData();
+        $filteredData = array_filter($data, fn($tarefa) => $tarefa['id'] != $id );
+        $this->writeData(array_values($filteredData));
+        return count($data) != count($filteredData);
     }
 }

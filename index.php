@@ -1,58 +1,79 @@
 <?php
-
-require __DIR__ . '/vendor/autoload.php';
-
+ 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-
+use Slim\Exception\HttpNotFoundException;
+use JoaoNogueira\Tarefas\Service;
+use JoaoNogueira\Tarefas\Service\TarefaService;
+ 
+require __DIR__ . '/vendor/autoload.php';
+ 
 $app = AppFactory::create();
-
-// Lista de usuários simulada
-$usuarios = [
-    ["id" => 1, "login" => "user1", "senha" => "1234", "nome" => "Usuário 1", "perfil" => "admin"],
-    ["id" => 2, "login" => "user2", "senha" => "1234", "nome" => "Usuário 2", "perfil" => "user"],
-    ["id" => 3, "login" => "user3", "senha" => "1234", "nome" => "Usuário 3", "perfil" => "user"],
-    ["id" => 4, "login" => "user4", "senha" => "1234", "nome" => "Usuário 4", "perfil" => "user"],
-    ["id" => 5, "login" => "user5", "senha" => "1234", "nome" => "Usuário 5", "perfil" => "user"],
-];
-
-// Rota GET /usuarios
-$app->get('/usuarios', function (Request $request, Response $response, array $args) use ($usuarios) {
-    $response->getBody()->write(json_encode(array_slice($usuarios, 0, 5)));
-    return $response->withHeader('Content-Type', 'application/json');
+ 
+// middleware é um evento que ocorre antes da requisição chegar na rota.
+ 
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorMiddleware->setErrorHandler(HttpNotFoundException::class, function (
+    Request $request,
+    Throwable $exception,
+    bool $displayErrorDetails,
+    bool $logErrors,
+    bool $logErrorDetails
+) use ($app) {
+    $response = $app->getResponseFactory()->createResponse();
+    $response->getBody()->write('{"error": "Recurso não foi encontrado"}');
+    return $response->withHeader('Content-Type', 'application/json')
+        ->withStatus(404);
 });
-
-// Rota POST /usuarios
-$app->post('/usuarios', function (Request $request, Response $response, array $args) use (&$usuarios) {
-    $data = (array) $request->getParsedBody();
-    
-    if (!isset($data['login']) || !isset($data['senha'])) {
-        $response->getBody()->write(json_encode(["erro" => "Login e senha são obrigatórios"]));
+ 
+$app->get('tarefas', function (Request $request, Response $response, array $args) {
+    $tarefa_service = new TarefaService();
+    $tarefas = $tarefa_service->getAllTarefas();
+    $response->getBody()->write(json_encode($tarefas));
+    $response->getBody()->write(json_encode($tarefas));
+    return $response->withHeader('content-type', 'application/json');
+});
+$app->post('/tarefas', function (Request $request, Response $response, array $args) {
+    $paramentos = (array) $request->getParsedBody();
+    if (!array_key_exists('titulo', $paramentos) || empty($paramentos['titulo'])) {
+        $response->getBody()->write(json_encode([
+            "mensagem" => "titulo é obrigatorio"
+        ]));
+        return $response->withHeader('content-type', 'application/json')->withStatus(400);
+    }
+    return $response->withStatus(201);
+});
+$app->delete('/tarefas', function (Request $request, Response $response, array $args) {
+ 
+    return $response->withStatus(204);
+});
+$app->put('/tarefas', function (Request $request, Response $response, array $args) {
+ 
+    return $response->withStatus(201);
+});
+ 
+$app->delete('/tarefas/{id}', function (Request $request, Response $response, array $args) {
+    $id = $args['id'];
+    return $response->withStatus(204);
+});
+ 
+$app->put('/tarefas', function (Request $request, Response $response, array $args) {
+    $id = $args['id'];
+    return $response->withStatus(201);
+});
+ 
+$app->put('/tarefas/{id}', function (Request $request, Response $response, array $args) {
+    $id = $args['id'];
+    $dados_para_atualizar = (array) $request->getParsedBody();
+    if (array_key_exists('titulo', $dados_para_atualizar) && empty($dados_para_atualizar['titulo'])) {
+        $response->getBody()->write(json_encode([
+            "mensagem" => "titulo é obrigatorio"
+        ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
-    
-    $novoUsuario = [
-        "id" => count($usuarios) + 1,
-        "login" => $data['login'],
-        "senha" => $data['senha'],
-        "nome" => $data['nome'] ?? '',
-        "perfil" => $data['perfil'] ?? ''
-    ];
-    
-    $usuarios[] = $novoUsuario;
-    $response->getBody()->write(json_encode($novoUsuario));
-    return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    return $response->withStatus(201);
 });
-
-// Rota DELETE /usuarios/{id}
-$app->delete('/usuarios/{id}', function (Request $request, Response $response, array $args) use (&$usuarios) {
-    $id = (int) $args['id'];
-    
-    $usuarios = array_filter($usuarios, fn($user) => $user['id'] !== $id);
-    
-    $response->getBody()->write(json_encode(["mensagem" => "Usuário excluído com sucesso"]));
-    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-});
-
+ 
 $app->run();
+ 
