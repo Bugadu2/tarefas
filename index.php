@@ -27,10 +27,9 @@ $errorMiddleware->setErrorHandler(HttpNotFoundException::class, function (
         ->withStatus(404);
 });
  
-$app->get('tarefas', function (Request $request, Response $response, array $args) {
+$app->get('/tarefas', function (Request $request, Response $response, array $args) {
     $tarefa_service = new TarefaService();
     $tarefas = $tarefa_service->getAllTarefas();
-    $response->getBody()->write(json_encode($tarefas));
     $response->getBody()->write(json_encode($tarefas));
     return $response->withHeader('content-type', 'application/json');
 });
