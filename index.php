@@ -4,8 +4,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Exception\HttpNotFoundException;
-use JoaoNogueira\Tarefas\Service;
-use JoaoNogueira\Tarefas\Service\TarefaService;
+use IsadoraTorres\Tarefas\Service;
+use IsadoraTorres\Tarefas\Service\TarefaService;
  
 require __DIR__ . '/vendor/autoload.php';
  
@@ -41,29 +41,26 @@ $app->post('/tarefas', function (Request $request, Response $response, array $ar
         ]));
         return $response->withHeader('content-type', 'application/json')->withStatus(400);
     }
-    $tarefa = array_merge(['titulo'  => '', 'concluido' => false], $parametros);
+    $tarefa = array_merge(['titulo' => '', 'concluido' => false], $paramentos);
     $tarefa_service = new TarefaService();
     $tarefa_service->createTarefa($tarefa);
-    
-    return $response->withStatus(201);
-});
-$app->delete('/tarefas/{id}', function (Request $request, Response $response, array $args) {
- 
-    return $response->withStatus(204);
-});
-$app->put('/tarefas/{id}', function (Request $request, Response $response, array $args) {
  
     return $response->withStatus(201);
 });
  
-$app->delete('/tarefas/{id}', function (Request $request, Response $response, array $args) {
-    $id = $args['id'];
+ 
+$app->delete('/tarefas', function (Request $request, Response $response, array $args) {
+ 
     return $response->withStatus(204);
 });
- 
 $app->put('/tarefas', function (Request $request, Response $response, array $args) {
-    $id = $args['id'];
     return $response->withStatus(201);
+});
+ 
+$app->delete('/tarefas/{id}', function (Request $request, Response $response, array $args) {
+    $id = $args['id'];
+ 
+    return $response->withStatus(204);
 });
  
 $app->put('/tarefas/{id}', function (Request $request, Response $response, array $args) {
@@ -75,11 +72,12 @@ $app->put('/tarefas/{id}', function (Request $request, Response $response, array
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
-    $tarefa_service = new TarefaService();
-    $tarefa_service->updatetarefa($id,$dados_para_atualizar);
-
+    $tarefa_service = new Tarefaservice();
+    $tarefa_service->updateTarefa($id, $dados_para_atualizar);
+ 
     return $response->withStatus(201);
 });
  
-$app->run();
  
+ 
+$app->run();
