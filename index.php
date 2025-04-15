@@ -28,7 +28,7 @@ $errorMiddleware->setErrorHandler(HttpNotFoundException::class, function (
 });
  
 $app->get('/tarefas', function (Request $request, Response $response, array $args) {
-    $tarefa_service = new TarefaService();
+    $tarefa_service = new TarefasService();
     $tarefas = $tarefa_service->getAllTarefas();
     $response->getBody()->write(json_encode($tarefas));
     return $response->withHeader('content-type', 'application/json');
@@ -42,7 +42,7 @@ $app->post('/tarefas', function (Request $request, Response $response, array $ar
         return $response->withHeader('content-type', 'application/json')->withStatus(400);
     }
     $tarefa = array_merge(['titulo' => '', 'concluido' => false], $paramentos);
-    $tarefa_service = new TarefaService();
+    $tarefa_service = new TarefasService();
     $tarefa_service->createTarefa($tarefa);
  
     return $response->withStatus(201);
@@ -72,7 +72,7 @@ $app->put('/tarefas/{id}', function (Request $request, Response $response, array
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
-    $tarefa_service = new Tarefaservice();
+    $tarefa_service = new TarefasService();
     $tarefa_service->updateTarefa($id, $dados_para_atualizar);
  
     return $response->withStatus(201);
