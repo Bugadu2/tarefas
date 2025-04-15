@@ -47,11 +47,11 @@ $app->post('/tarefas', function (Request $request, Response $response, array $ar
     
     return $response->withStatus(201);
 });
-$app->delete('/tarefas', function (Request $request, Response $response, array $args) {
+$app->delete('/tarefas/{id}', function (Request $request, Response $response, array $args) {
  
     return $response->withStatus(204);
 });
-$app->put('/tarefas', function (Request $request, Response $response, array $args) {
+$app->put('/tarefas/{id}', function (Request $request, Response $response, array $args) {
  
     return $response->withStatus(201);
 });
@@ -77,7 +77,7 @@ $app->put('/tarefas/{id}', function (Request $request, Response $response, array
     }
     $tarefa_service = new TarefaService();
     $tarefa_service->updatetarefa($id,$dados_para_atualizar);
-    
+
     return $response->withStatus(201);
 });
  
