@@ -75,6 +75,9 @@ $app->put('/tarefas/{id}', function (Request $request, Response $response, array
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
+    $tarefa_service = new TarefaService();
+    $tarefa_service->updatetarefa($id,$dados_para_atualizar);
+    
     return $response->withStatus(201);
 });
  
