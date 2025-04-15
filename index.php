@@ -4,8 +4,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Exception\HttpNotFoundException;
-use IsadoraTorres\Tarefas\Service;
-use IsadoraTorres\Tarefas\Service\TarefaService;
+use JoaoNogueira\Tarefas\Service;
+use JoaoNogueira\Tarefas\Service\TarefaService;
  
 require __DIR__ . '/vendor/autoload.php';
  
