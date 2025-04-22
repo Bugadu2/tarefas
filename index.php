@@ -6,6 +6,9 @@ use Slim\Factory\AppFactory;
 use Slim\Exception\HttpNotFoundException;
 use JoaoNogueira\Tarefas\Service;
 use JoaoNogueira\Tarefas\Service\TarefasService;
+use Projetux\Service\TarefasService;
+use Projetux\Infro\Debug;
+use Projetux\Math\Basic;
  
 require __DIR__ . '/vendor/autoload.php';
  
