@@ -7,7 +7,7 @@
     },
     "autoload": {
         "psr-4": {
-            "JoaoNogueira\\Tarefas\\": "src/"
+            "Projetux\\": "src/"
         }
     }
 }

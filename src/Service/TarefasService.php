@@ -1,5 +1,5 @@
 <?php
-namespace JoaoNogueira\Tarefas\Service;
+namespace Projetux\Service;
 
 class TarefasService
 {

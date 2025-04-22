@@ -1,11 +1,8 @@
 <?php
- 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Exception\HttpNotFoundException;
-use JoaoNogueira\Tarefas\Service;
-use JoaoNogueira\Tarefas\Service\TarefasService;
 use Projetux\Service\TarefasService;
 use Projetux\Infro\Debug;
 use Projetux\Math\Basic;
@@ -29,7 +26,51 @@ $errorMiddleware->setErrorHandler(HttpNotFoundException::class, function (
     return $response->withHeader('Content-Type', 'application/json')
         ->withStatus(404);
 });
- 
+$app->get("/Math/soma/{num1}/{num2}", function(Request $request, Response $response, array $args){
+    $basic = new Basic();
+    $resultado = $basic->soma($args['num1'], $args['num2']);
+    $response->getBody()->write((string) $resultado);
+    return $response;
+});
+$app->get('/teste-debug',function (Request $request, Response $response, array $args){
+    $debug = new Debug();
+    $response->getBody()->write($debug->debug('teste 00001'));
+    return $response;
+});
+$app->get("/Math/subtrai/{num1}/{num2}", function(Request $request, Response $response, array $args){
+    $basic = new Basic();
+    $resultado = $basic->subtrai($args['num1'], $args['num2']);
+    $response->getBody()->write((string) $resultado);
+    return $response;
+});
+$app->get("/Math/divide/{num1}/{num2}", function(Request $request, Response $response, array $args){
+    $basic = new Basic();
+    $resultado = $basic->divide($args['num1'], $args['num2']);
+    $response->getBody()->write((string) $resultado);
+    return $response;
+});
+$app->get("/Math/raiz/{num1}/{num2}", function(Request $request, Response $response, array $args){
+    $basic = new Basic();
+    $resultado = $basic->raiz($args['num1'], $args['num2']);
+    $response->getBody()->write((string) $resultado);
+    return $response;
+});
+$app->get("/Math/multiplicar/{num1}/{num2}", function(Request $request, Response $response, array $args){
+    $basic = new Basic();
+    $resultado = $basic->multiplicar($args['num1'], $args['num2']);
+    $response->getBody()->write((string) $resultado);
+    return $response;
+});
+$app->get("/Math/elevado_ao_quadrado/{num1}/{num2}", function(Request $request, Response $response, array $args){
+    $basic = new Basic();
+    $resultado = $basic->elevado_ao_quadrado($args['num1'], $args['num2']);
+    $response->getBody()->write((string) $resultado);
+    return $response;
+});
+
+
+
+
 $app->get('/tarefas', function (Request $request, Response $response, array $args) {
     $tarefas_service = new TarefasService();
     $tarefas = $tarefas_service->getAllTarefas();
